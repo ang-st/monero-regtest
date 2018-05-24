@@ -70,11 +70,13 @@ public:
   {
     bool testnet = command_line::get_arg(m_vm_HACK, cryptonote::arg_testnet_on);
     bool stagenet = command_line::get_arg(m_vm_HACK, cryptonote::arg_stagenet_on);
-    bool mainnet = !testnet && !stagenet;
-    std::string port = command_line::get_arg(m_vm_HACK, nodetool::arg_p2p_bind_port);
-    if ((mainnet && port != std::to_string(::config::P2P_DEFAULT_PORT))
+    bool regtest = command_line::get_arg(m_vm_HACK, cryptonote::arg_regtest_on);
+    bool mainnet = !testnet && !stagenet && !regtest;
+     std::string port = command_line::get_arg(m_vm_HACK, nodetool::arg_p2p_bind_port);
+     if ((mainnet && port != std::to_string(::config::P2P_DEFAULT_PORT))
         || (testnet && port != std::to_string(::config::testnet::P2P_DEFAULT_PORT))
-        || (stagenet && port != std::to_string(::config::stagenet::P2P_DEFAULT_PORT))) {
+        || (stagenet && port != std::to_string(::config::stagenet::P2P_DEFAULT_PORT))
+        || (regtest && port != std::to_string(::config::regtest::P2P_DEFAULT_PORT))) {
       return port;
     }
     return std::string();
