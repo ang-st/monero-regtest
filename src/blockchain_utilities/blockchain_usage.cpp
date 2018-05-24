@@ -104,6 +104,7 @@ int main(int argc, char* argv[])
 
   command_line::add_arg(desc_cmd_sett, cryptonote::arg_testnet_on);
   command_line::add_arg(desc_cmd_sett, cryptonote::arg_stagenet_on);
+  command_line::add_arg(desc_cmd_sett, cryptonote::arg_regtest_on);
   command_line::add_arg(desc_cmd_sett, arg_log_level);
   command_line::add_arg(desc_cmd_sett, arg_database);
   command_line::add_arg(desc_cmd_sett, arg_rct_only);
@@ -144,7 +145,8 @@ int main(int argc, char* argv[])
 
   bool opt_testnet = command_line::get_arg(vm, cryptonote::arg_testnet_on);
   bool opt_stagenet = command_line::get_arg(vm, cryptonote::arg_stagenet_on);
-  network_type net_type = opt_testnet ? TESTNET : opt_stagenet ? STAGENET : MAINNET;
+  bool opt_regtest = command_line::get_arg(vm, cryptonote::arg_regtest_on);
+  network_type net_type = opt_testnet ? TESTNET : opt_stagenet ? STAGENET : opt_regtest ? REGTEST : MAINNET;
   bool opt_rct_only = command_line::get_arg(vm, arg_rct_only);
 
   std::string db_type = command_line::get_arg(vm, arg_database);

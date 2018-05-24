@@ -161,15 +161,17 @@ int main(int argc, char* argv[])
 
   po::options_description desc_cmd_only("Command line options");
   po::options_description desc_cmd_sett("Command line options and settings options");
-  const command_line::arg_descriptor<std::string, false, true, 2> arg_blackball_db_dir = {
+  const command_line::arg_descriptor<std::string, false, true, 3> arg_blackball_db_dir = {
       "blackball-db-dir", "Specify blackball database directory",
       get_default_db_path(),
-      {{ &arg_testnet_on, &arg_stagenet_on }},
-      [](std::array<bool, 2> testnet_stagenet, bool defaulted, std::string val) {
-        if (testnet_stagenet[0])
+      {{ &arg_testnet_on, &arg_stagenet_on, &arg_regtest_on }},
+      [](std::array<bool, 3> testnet_stagenet_regtest, bool defaulted, std::string val) {
+        if (testnet_stagenet_regtest[0])
           return (boost::filesystem::path(val) / "testnet").string();
-        else if (testnet_stagenet[1])
+        else if (testnet_stagenet_regtest[1])
           return (boost::filesystem::path(val) / "stagenet").string();
+        else if (testnet_stagenet_regtest[2])
+          return (boost::filesystem::path(val) / "regtest").string();
         return val;
       }
   };
@@ -183,6 +185,7 @@ int main(int argc, char* argv[])
   command_line::add_arg(desc_cmd_sett, arg_blackball_db_dir);
   command_line::add_arg(desc_cmd_sett, cryptonote::arg_testnet_on);
   command_line::add_arg(desc_cmd_sett, cryptonote::arg_stagenet_on);
+  command_line::add_arg(desc_cmd_sett, cryptonote::arg_regtest_on);
   command_line::add_arg(desc_cmd_sett, arg_log_level);
   command_line::add_arg(desc_cmd_sett, arg_database);
   command_line::add_arg(desc_cmd_sett, arg_rct_only);
@@ -223,7 +226,8 @@ int main(int argc, char* argv[])
 
   bool opt_testnet = command_line::get_arg(vm, cryptonote::arg_testnet_on);
   bool opt_stagenet = command_line::get_arg(vm, cryptonote::arg_stagenet_on);
-  network_type net_type = opt_testnet ? TESTNET : opt_stagenet ? STAGENET : MAINNET;
+  bool opt_regtest = command_line::get_arg(vm, cryptonote::arg_regtest_on);
+  network_type net_type = opt_testnet ? TESTNET : opt_stagenet ? STAGENET : opt_regtest ? REGTEST : MAINNET;
   output_file_path = command_line::get_arg(vm, arg_blackball_db_dir);
   bool opt_rct_only = command_line::get_arg(vm, arg_rct_only);
 
