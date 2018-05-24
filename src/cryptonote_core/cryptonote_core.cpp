@@ -76,16 +76,23 @@ namespace cryptonote
   , "Run on stagenet. The wallet must be launched with --stagenet flag."
   , false
   };
-  const command_line::arg_descriptor<std::string, false, true, 2> arg_data_dir = {
+  const command_line::arg_descriptor<bool, false> arg_regtest_on  = {
+    "regtest"
+  , "Run on regtest. The wallet must be launched with --regtest flag."
+  , false
+  };
+  const command_line::arg_descriptor<std::string, false, true, 3> arg_data_dir = {
     "data-dir"
   , "Specify data directory"
   , tools::get_default_data_dir()
-  , {{ &arg_testnet_on, &arg_stagenet_on }}
-  , [](std::array<bool, 2> testnet_stagenet, bool defaulted, std::string val)->std::string {
-      if (testnet_stagenet[0])
+  , {{ &arg_testnet_on, &arg_stagenet_on, &arg_regtest_on }}
+  , [](std::array<bool, 3> testnet_stagenet_regtest, bool defaulted, std::string val) {
+      if (testnet_stagenet_regtest[0])
         return (boost::filesystem::path(val) / "testnet").string();
-      else if (testnet_stagenet[1])
+      else if (testnet_stagenet_regtest[1])
         return (boost::filesystem::path(val) / "stagenet").string();
+      else if (testnet_stagenet_regtest[2])
+        return (boost::filesystem::path(val) / "regtest").string();
       return val;
     }
   };
@@ -252,6 +259,7 @@ namespace cryptonote
 
     command_line::add_arg(desc, arg_testnet_on);
     command_line::add_arg(desc, arg_stagenet_on);
+    command_line::add_arg(desc, arg_regtest_on);
     command_line::add_arg(desc, arg_dns_checkpoints);
     command_line::add_arg(desc, arg_prep_blocks_threads);
     command_line::add_arg(desc, arg_fast_block_sync);
@@ -275,7 +283,8 @@ namespace cryptonote
     {
       const bool testnet = command_line::get_arg(vm, arg_testnet_on);
       const bool stagenet = command_line::get_arg(vm, arg_stagenet_on);
-      m_nettype = testnet ? TESTNET : stagenet ? STAGENET : MAINNET;
+      const bool regtest = command_line::get_arg(vm, arg_regtest_on);
+      m_nettype = testnet ? TESTNET : stagenet ? STAGENET : regtest ? REGTEST : MAINNET;
     }
 
     m_config_folder = command_line::get_arg(vm, arg_data_dir);
