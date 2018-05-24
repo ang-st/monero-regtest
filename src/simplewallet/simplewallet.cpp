@@ -2568,12 +2568,13 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
 {
   const bool testnet = tools::wallet2::has_testnet_option(vm);
   const bool stagenet = tools::wallet2::has_stagenet_option(vm);
-  if (testnet && stagenet)
+  const bool regtest = tools::wallet2::has_regtest_option(vm);
+  if ((testnet && stagenet) || (testnet && regtest) || (regtest && stagenet))
   {
-    fail_msg_writer() << tr("Can't specify more than one of --testnet and --stagenet");
+    fail_msg_writer() << tr("Can't specify more than one of --testnet, --stagenet and --regtest");
     return false;
   }
-  const network_type nettype = testnet ? TESTNET : stagenet ? STAGENET : MAINNET;
+  const network_type nettype = testnet ? TESTNET : stagenet ? STAGENET : regtest ? REGTEST : MAINNET;
 
   std::string multisig_keys;
 
@@ -3753,7 +3754,9 @@ bool simple_wallet::set_daemon(const std::vector<std::string>& args)
     // If no port has been provided, use the default from config
     if (!match[3].length())
     {
-      int daemon_port = m_wallet->nettype() == cryptonote::TESTNET ? config::testnet::RPC_DEFAULT_PORT : m_wallet->nettype() == cryptonote::STAGENET ? config::stagenet::RPC_DEFAULT_PORT : config::RPC_DEFAULT_PORT;
+      int daemon_port = m_wallet->nettype() == cryptonote::TESTNET ? config::testnet::RPC_DEFAULT_PORT : 
+                        m_wallet->nettype() == cryptonote::STAGENET ? config::stagenet::RPC_DEFAULT_PORT : 
+                        m_wallet->nettype() == cryptonote::REGTEST ? config::regtest::RPC_DEFAULT_PORT : config::RPC_DEFAULT_PORT;
       daemon_url = match[1] + match[2] + std::string(":") + std::to_string(daemon_port);
     } else {
       daemon_url = args[0];
@@ -5252,7 +5255,7 @@ bool simple_wallet::donate(const std::vector<std::string> &args_)
 {
   if(m_wallet->nettype() != cryptonote::MAINNET)
   {
-    fail_msg_writer() << tr("donations are not enabled on the testnet or on the stagenet");
+    fail_msg_writer() << tr("donations are not enabled on the testnet, stagenet or regtest");
     return true;
   }
 
@@ -6982,7 +6985,8 @@ bool simple_wallet::wallet_info(const std::vector<std::string> &args)
   message_writer() << tr("Type: ") << type;
   message_writer() << tr("Network type: ") << (
     m_wallet->nettype() == cryptonote::TESTNET ? tr("Testnet") :
-    m_wallet->nettype() == cryptonote::STAGENET ? tr("Stagenet") : tr("Mainnet"));
+    m_wallet->nettype() == cryptonote::STAGENET ? tr("Stagenet") : 
+    m_wallet->nettype() == cryptonote::REGTEST ? tr("Regtest") : tr("Mainnet"));
   return true;
 }
 //----------------------------------------------------------------------------------------------------

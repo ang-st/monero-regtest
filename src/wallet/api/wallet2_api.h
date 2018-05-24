@@ -44,7 +44,8 @@ namespace Monero {
 enum NetworkType : uint8_t {
     MAINNET = 0,
     TESTNET,
-    STAGENET
+    STAGENET,
+    REGTEST
 };
 
     namespace Utils {
@@ -369,6 +370,7 @@ struct Wallet
     bool mainnet() const { return nettype() == MAINNET; }
     bool testnet() const { return nettype() == TESTNET; }
     bool stagenet() const { return nettype() == STAGENET; }
+    bool regtest() const { return nettype() == REGTEST; }
     //! returns current hard fork info
     virtual void hardForkInfo(uint8_t &version, uint64_t &earliest_height) const = 0;
     //! check if hard fork rules should be used

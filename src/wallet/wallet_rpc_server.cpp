@@ -2915,9 +2915,10 @@ int main(int argc, char** argv) {
   {
     const bool testnet = tools::wallet2::has_testnet_option(*vm);
     const bool stagenet = tools::wallet2::has_stagenet_option(*vm);
-    if (testnet && stagenet)
+    const bool regtest = tools::wallet2::has_regtest_option(*vm);
+    if ((testnet && stagenet) || (testnet && regtest) || (regtest && stagenet))
     {
-      MERROR(tools::wallet_rpc_server::tr("Can't specify more than one of --testnet and --stagenet"));
+      MERROR(tools::wallet_rpc_server::tr("Can't specify more than one of --testnet, --stagenet and --regtest"));      
       return 1;
     }
 
