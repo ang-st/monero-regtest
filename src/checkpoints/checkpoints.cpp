@@ -173,6 +173,11 @@ namespace cryptonote
       ADD_CHECKPOINT(10000,   "1f8b0ce313f8b9ba9a46108bfd285c45ad7c2176871fd41c3a690d4830ce2fd5");
       return true;
     }
+    if (nettype == REGTEST)
+    {
+      ADD_CHECKPOINT(0,       "999bb2bbdc20ce1766fb06a1b23b348029074ade6755757bfb6bdf16a4587c36");
+      return true;
+    }
     ADD_CHECKPOINT(1,     "771fbcd656ec1464d3a02ead5e18644030007a0fc664c0a964d30922821a8148");
     ADD_CHECKPOINT(10,    "c0e3b387e47042f72d8ccdca88071ff96bff1ac7cde09ae113dbb7ad3fe92381");
     ADD_CHECKPOINT(100,   "ac3e11ca545e57c49fca2b4e8c48c03c23be047c43e471e1394528b1f9f80b2d");
@@ -271,7 +276,10 @@ namespace cryptonote
                    , "stagenetpoints.moneropulse.co"
     };
 
-    if (!tools::dns_utils::load_txt_records_from_dns(records, nettype == TESTNET ? testnet_dns_urls : nettype == STAGENET ? stagenet_dns_urls : dns_urls))
+    static const std::vector<std::string> regtest_dns_urls = { 
+    };
+
+    if (!tools::dns_utils::load_txt_records_from_dns(records, nettype == TESTNET ? testnet_dns_urls : nettype == STAGENET ? stagenet_dns_urls : nettype == REGTEST ? regtest_dns_urls : dns_urls))
       return true; // why true ?
 
     for (const auto& record : records)
