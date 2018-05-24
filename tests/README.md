@@ -50,6 +50,10 @@ To run the same tests on a release build, replace `debug` with `release`.
 # Functional tests
 
 [TODO]
+Functional tests are located under the `tests/functional` directory. 
+Requires installing: https://github.com/emesik/monero-python
+Make sure you run the monero daemon with rpc port 28081, then start tests by invoking ./blockchain.py or ./speed.py
+Inspired by: https://github.com/bitcoin/bitcoin/tree/master/test/functional
 
 # Fuzz tests
 
