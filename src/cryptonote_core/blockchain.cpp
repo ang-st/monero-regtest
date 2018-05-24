@@ -153,6 +153,21 @@ static const struct {
   { 7, 37000, 0, 1521600000 },
 };
 
+static const struct {
+  uint8_t version;
+  uint64_t height;
+  uint8_t threshold;
+  time_t time;
+} regtest_hard_forks[] = {
+  { 1, 1, 0, 1341378000 },
+  { 2, 32000, 0, 1521000000 },
+  { 3, 33000, 0, 1521120000 },
+  { 4, 34000, 0, 1521240000 },
+  { 5, 35000, 0, 1521360000 },
+  { 6, 36000, 0, 1521480000 },
+  { 7, 37000, 0, 1521600000 },
+};
+
 //------------------------------------------------------------------
 Blockchain::Blockchain(tx_memory_pool& tx_pool) :
   m_db(), m_tx_pool(tx_pool), m_hardfork(NULL), m_timestamps_and_difficulties_height(0), m_current_block_cumul_sz_limit(0), m_current_block_cumul_sz_median(0),
@@ -351,7 +366,7 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
   m_offline = offline;
   if (m_hardfork == nullptr)
   {
-    if (m_nettype ==  FAKECHAIN || m_nettype == STAGENET)
+    if (m_nettype ==  FAKECHAIN || m_nettype == STAGENET || m_nettype == REGTEST)
       m_hardfork = new HardFork(*db, 1, 0);
     else if (m_nettype == TESTNET)
       m_hardfork = new HardFork(*db, 1, testnet_hard_fork_version_1_till);
@@ -372,6 +387,11 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
   {
     for (size_t n = 0; n < sizeof(stagenet_hard_forks) / sizeof(stagenet_hard_forks[0]); ++n)
       m_hardfork->add_fork(stagenet_hard_forks[n].version, stagenet_hard_forks[n].height, stagenet_hard_forks[n].threshold, stagenet_hard_forks[n].time);
+  }
+  else if (m_nettype == REGTEST)
+  {
+    for (size_t n = 0; n < sizeof(regtest_hard_forks) / sizeof(regtest_hard_forks[0]); ++n)
+      m_hardfork->add_fork(regtest_hard_forks[n].version, regtest_hard_forks[n].height, regtest_hard_forks[n].threshold, regtest_hard_forks[n].time);
   }
   else
   {
@@ -398,6 +418,10 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
     else if (m_nettype == STAGENET)
     {
       generate_genesis_block(bl, config::stagenet::GENESIS_TX, config::stagenet::GENESIS_NONCE);
+    }
+    else if (m_nettype == REGTEST)
+    {
+      generate_genesis_block(bl, config::regtest::GENESIS_TX, config::regtest::GENESIS_NONCE);
     }
     else
     {
@@ -1969,6 +1993,7 @@ bool Blockchain::get_output_distribution(uint64_t amount, uint64_t from_height, 
   {
     switch (m_nettype)
     {
+      case REGTEST: start_height = regtest_hard_forks[2].height; break;
       case STAGENET: start_height = stagenet_hard_forks[2].height; break;
       case TESTNET: start_height = testnet_hard_forks[2].height; break;
       case MAINNET: start_height = mainnet_hard_forks[2].height; break;
