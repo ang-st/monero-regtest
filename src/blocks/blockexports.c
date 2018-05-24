@@ -16,24 +16,28 @@ extern const struct mach_header_64 _mh_execute_header;
 #endif
 #endif
 
-const unsigned char *get_blocks_dat_start(int testnet, int stagenet)
+const unsigned char *get_blocks_dat_start(int testnet, int stagenet, int regtest)
 {
     size_t size;
     if (testnet)
         return getsectiondata(&_mh_execute_header, "__DATA", "__testnet_blocks_dat", &size);
     else if (stagenet)
         return getsectiondata(&_mh_execute_header, "__DATA", "__stagenet_blocks_dat", &size);
+    else if (regtest)
+        return getsectiondata(&_mh_execute_header, "__DATA", "__regtest_blocks_dat", &size);
     else
         return getsectiondata(&_mh_execute_header, "__DATA", "__blocks_dat", &size);
 }
 
-size_t get_blocks_dat_size(int testnet, int stagenet)
+size_t get_blocks_dat_size(int testnet, int stagenet, int regtest)
 {
     size_t size;
     if (testnet)
         getsectiondata(&_mh_execute_header, "__DATA", "__testnet_blocks_dat", &size);
     else if (stagenet)
         getsectiondata(&_mh_execute_header, "__DATA", "__stagenet_blocks_dat", &size);
+    else if (regtest)
+        getsectiondata(&_mh_execute_header, "__DATA", "__regtest_blocks_dat", &size);
     else
         getsectiondata(&_mh_execute_header, "__DATA", "__blocks_dat", &size);
     return size;
@@ -48,6 +52,8 @@ size_t get_blocks_dat_size(int testnet, int stagenet)
 #define _binary_testnet_blocks_end binary_testnet_blocks_dat_end
 #define _binary_stagenet_blocks_start binary_stagenet_blocks_dat_start
 #define _binary_stagenet_blocks_end binary_stagenet_blocks_dat_end
+#define _binary_regtest_blocks_start binary_regtest_blocks_dat_start
+#define _binary_regtest_blocks_end binary_regtest_blocks_dat_end
 #else
 #define _binary_blocks_start _binary_blocks_dat_start
 #define _binary_blocks_end _binary_blocks_dat_end
@@ -55,6 +61,8 @@ size_t get_blocks_dat_size(int testnet, int stagenet)
 #define _binary_testnet_blocks_end _binary_testnet_blocks_dat_end
 #define _binary_stagenet_blocks_start _binary_stagenet_blocks_dat_start
 #define _binary_stagenet_blocks_end _binary_stagenet_blocks_dat_end
+#define _binary_regtest_blocks_start _binary_regtest_blocks_dat_start
+#define _binary_regtest_blocks_end _binary_regtest_blocks_dat_end
 #endif
 
 extern const unsigned char _binary_blocks_start[];
@@ -63,23 +71,29 @@ extern const unsigned char _binary_testnet_blocks_start[];
 extern const unsigned char _binary_testnet_blocks_end[];
 extern const unsigned char _binary_stagenet_blocks_start[];
 extern const unsigned char _binary_stagenet_blocks_end[];
+extern const unsigned char _binary_regtest_blocks_start[];
+extern const unsigned char _binary_regtest_blocks_end[];
 
-const unsigned char *get_blocks_dat_start(int testnet, int stagenet)
+const unsigned char *get_blocks_dat_start(int testnet, int stagenet, int regtest)
 {
   if (testnet)
     return _binary_testnet_blocks_start;
   else if (stagenet)
     return _binary_stagenet_blocks_start;
+  else if (regtest)
+    return _binary_regtest_blocks_start;
   else
     return _binary_blocks_start;
 }
 
-size_t get_blocks_dat_size(int testnet, int stagenet)
+size_t get_blocks_dat_size(int testnet, int stagenet, int regtest)
 {
   if (testnet)
     return (size_t) (_binary_testnet_blocks_end - _binary_testnet_blocks_start);
   else if (stagenet)
     return (size_t) (_binary_stagenet_blocks_end - _binary_stagenet_blocks_start);
+  else if (regtest)
+    return (size_t) (_binary_regtest_blocks_end - _binary_regtest_blocks_start);
   else
     return (size_t) (_binary_blocks_end - _binary_blocks_start);
 }

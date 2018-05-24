@@ -5,8 +5,8 @@
 extern "C" {
 #endif
 
-const unsigned char *get_blocks_dat_start(int testnet, int stagenet);
-size_t get_blocks_dat_size(int testnet, int stagenet);
+const unsigned char *get_blocks_dat_start(int testnet, int stagenet, int regtest);
+size_t get_blocks_dat_size(int testnet, int stagenet, int regtest);
 
 #ifdef __cplusplus
 }

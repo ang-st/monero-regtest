@@ -4439,15 +4439,16 @@ void Blockchain::load_compiled_in_block_hashes()
 {
   const bool testnet = m_nettype == TESTNET;
   const bool stagenet = m_nettype == STAGENET;
-  if (m_fast_sync && get_blocks_dat_start(testnet, stagenet) != nullptr && get_blocks_dat_size(testnet, stagenet) > 0)
+  const bool regtest = m_nettype == REGTEST;
+  if (m_fast_sync && get_blocks_dat_start(testnet, stagenet, regtest) != nullptr && get_blocks_dat_size(testnet, stagenet, regtest) > 0)
   {
-    MINFO("Loading precomputed blocks (" << get_blocks_dat_size(testnet, stagenet) << " bytes)");
+    MINFO("Loading precomputed blocks (" << get_blocks_dat_size(testnet, stagenet, regtest) << " bytes)");
 
     if (m_nettype == MAINNET)
     {
       // first check hash
       crypto::hash hash;
-      if (!tools::sha256sum(get_blocks_dat_start(testnet, stagenet), get_blocks_dat_size(testnet, stagenet), hash))
+      if (!tools::sha256sum(get_blocks_dat_start(testnet, stagenet, regtest), get_blocks_dat_size(testnet, stagenet, regtest), hash))
       {
         MERROR("Failed to hash precomputed blocks data");
         return;
@@ -4467,9 +4468,9 @@ void Blockchain::load_compiled_in_block_hashes()
       }
     }
 
-    if (get_blocks_dat_size(testnet, stagenet) > 4)
+    if (get_blocks_dat_size(testnet, stagenet, regtest) > 4)
     {
-      const unsigned char *p = get_blocks_dat_start(testnet, stagenet);
+      const unsigned char *p = get_blocks_dat_start(testnet, stagenet, regtest);
       const uint32_t nblocks = *p | ((*(p+1))<<8) | ((*(p+2))<<16) | ((*(p+3))<<24);
       if (nblocks > (std::numeric_limits<uint32_t>::max() - 4) / sizeof(hash))
       {
@@ -4477,7 +4478,7 @@ void Blockchain::load_compiled_in_block_hashes()
         return;
       }
       const size_t size_needed = 4 + nblocks * sizeof(crypto::hash);
-      if(nblocks > 0 && nblocks > (m_db->height() + HASH_OF_HASHES_STEP - 1) / HASH_OF_HASHES_STEP && get_blocks_dat_size(testnet, stagenet) >= size_needed)
+      if(nblocks > 0 && nblocks > (m_db->height() + HASH_OF_HASHES_STEP - 1) / HASH_OF_HASHES_STEP && get_blocks_dat_size(testnet, stagenet, regtest) >= size_needed)
       {
         p += sizeof(uint32_t);
         m_blocks_hash_of_hashes.reserve(nblocks);
