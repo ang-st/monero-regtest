@@ -191,6 +191,21 @@ namespace config
     std::string const GENESIS_TX = "013c01ff0001ffffffffffff0302df5d56da0c7d643ddd1ce61901c7bdc5fb1738bfe39fbe69c28a3a7032729c0f2101168d0c4ca86fb55a4cf6a36d31431be1c53a3bd7411bb24e8832410289fa6f3b";
     uint32_t const GENESIS_NONCE = 10002;
   }
+
+  namespace regtest
+  {
+    uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 20; 
+    uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 21;
+    uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 40;
+    uint16_t const P2P_DEFAULT_PORT = 48080;
+    uint16_t const RPC_DEFAULT_PORT = 48081;
+    uint16_t const ZMQ_RPC_DEFAULT_PORT = 48082;
+    boost::uuids::uuid const NETWORK_ID = { {
+        0x12 ,0x30, 0xF1, 0x71 , 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x13
+      } }; // the Matrix
+    std::string const GENESIS_TX = "013c01ff0001ffffffffffff0302e79b332961a8e9f30e99a20d19335822e63c570c0bdee80152cb61008bdbdc7b210115865ee0b9385338f516924becda775be5b7c9bee6ddb8920954162aa9189301";
+    uint32_t const GENESIS_NONCE = 10003;
+  }
 }
 
 namespace cryptonote
@@ -200,6 +215,7 @@ namespace cryptonote
     MAINNET = 0,
     TESTNET,
     STAGENET,
+    REGTEST,
     FAKECHAIN,
     UNDEFINED = 255
   };

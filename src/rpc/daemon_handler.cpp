@@ -574,6 +574,12 @@ namespace rpc
     res.error_details = "RPC method not yet implemented.";
   }
 
+  void DaemonHandler::handle(const GenerateBlocks::Request& req, GenerateBlocks::Response& res)
+  {
+    res.status = Message::STATUS_FAILED;
+    res.error_details = "RPC method not yet implemented.";
+  }
+
   void DaemonHandler::handle(const GetLastBlockHeader::Request& req, GetLastBlockHeader::Response& res)
   {
     const crypto::hash block_hash = m_core.get_tail_id();
