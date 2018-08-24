@@ -90,6 +90,7 @@ WORKDIR /src
 COPY . .
 
 ARG NPROC
+RUN git submodule init && git submodule update
 RUN rm -rf build && \
     if [ -z "$NPROC" ];then make -j$(nproc) release-static;else make -j$NPROC release-static;fi
 
@@ -114,4 +115,4 @@ VOLUME /wallet
 EXPOSE 18080
 EXPOSE 18081
 
-ENTRYPOINT ["monerod", "--p2p-bind-ip=0.0.0.0", "--p2p-bind-port=18080", "--rpc-bind-ip=0.0.0.0", "--rpc-bind-port=18081", "--non-interactive", "--confirm-external-bind"] 
+ENTRYPOINT ["monerod", "--p2p-bind-ip=0.0.0.0", "--p2p-bind-port=18080", "--rpc-bind-ip=0.0.0.0", "--rpc-bind-port=18081", "--non-interactive", "--confirm-external-bind", "--regtest"] 
